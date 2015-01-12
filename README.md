@@ -7,6 +7,7 @@ Provision a virtual machine with vagrant and puppet to play around with statsd a
  * debian package for statsd (github.com/etsy) included
  * port forwardings enabled
  * graphite: http://localhost:8080/
+ * Grafana: http://localhost:8081
  * statsd: 8125:udp
 
 ## Installation
@@ -24,6 +25,4 @@ The default account is admin/admin
 
 Created by jimdo https://github.com/Jimdo
 
-Contributors
-
-* liuggio https://github.com/liuggio
+For the list of contributors see the [commit history](https://github.com/tilmans/vagrant-statsd-graphite-puppet/commits/master)
