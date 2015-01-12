@@ -2,10 +2,11 @@
 # # vi: set ft=ruby :
 #
 Vagrant.configure('2') do |config|
-  config.vm.box = "precise64"
-  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  config.vm.box = "puppet_ubuntu12"
+  config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-12042-x64-vbox4210.box"
 
   config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "forwarded_port", guest: 8081, host: 8081
   config.vm.network "forwarded_port", guest: 2003, host: 2003
   config.vm.network "forwarded_port", guest: 2003, host: 2003, protocol: 'udp'
   config.vm.network "forwarded_port", guest: 2004, host: 2004

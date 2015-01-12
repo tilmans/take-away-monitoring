@@ -34,5 +34,56 @@ Pin-Priority: 550
     ensure => present,
 }
 
+file { "/etc/issue":
+    content => "
+Welcome to the Graphite VM. To access the Graphite UI open http://localhost:8080 in your browser.
+
+The Graphite account is admin/admin
+
+To login via SSH: ssh -p 2222 vagrant@localhost
+The login account is vagrant/vagrant.
+
+Service ports:
+Graphite Web: 8080
+Grafana: 8081
+SSH: 2222
+Graphite/Carbon input: 2003 TCP, 2003 UDP
+StatsD: 8125 UDP
+",
+    ensure => present
+}
+
+class { 'apache':
+    default_vhost   => false,
+}
+
 include carbon
 include statsd
+
+class { 'grafana':
+    datasources  => {
+        'graphite' => {
+            'type'    => 'graphite',
+            'url'     => 'http://localhost:8080',
+            'default' => 'true'
+        }, 
+    }
+}
+
+# Create Apache virtual host
+apache::vhost { 'grafana.example.com':
+    servername      => 'grafana.example.com',
+    port            => 8081,
+    docroot         => '/opt/grafana',
+    error_log_file  => 'grafana-error.log',
+    access_log_file => 'grafana-access.log',
+    directories     => [
+        {
+            path            => '/opt/grafana',
+            options         => [ 'None' ],
+            allow           => 'from All',
+            allow_override  => [ 'None' ],
+            order           => 'Allow,Deny',
+        }
+    ]
+}

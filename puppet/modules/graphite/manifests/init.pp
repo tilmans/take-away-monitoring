@@ -6,13 +6,17 @@ class graphite($version = '0.9.10') {
 
   $webapp_loc = "$build_dir/graphite-web.tar.gz"
 
-  $python_packages = [ 'apache2', 'python-ldap', 'python-cairo', 'python-django', 'python-django-tagging', 
+  $python_packages = [ 'python-ldap', 'python-cairo', 'python-django', 'python-django-tagging', 
                       'python-simplejson', 'libapache2-mod-python', 'python-memcache', 'python-pysqlite2',
                       'python-support']
 
   package { $python_packages:
     ensure => latest,
   } ->
+
+  class { 'apache::mod::python':} ->
+
+  class { 'apache::mod::headers':} ->
 
   package { "python-whisper":
     ensure   => installed,
@@ -36,6 +40,15 @@ class graphite($version = '0.9.10') {
     command => "python setup.py install",
     cwd => "$build_dir/graphite-web-${version}",
     creates => "/opt/graphite/webapp"
+  } ->
+
+    apache::vhost { 'graphite.example.com':
+      servername      => 'graphite.example.com',
+      port            => 80,
+      priority        => 25,
+      docroot         => '/opt/graphite/webapp',
+      error_log_file  => 'graphite-error.log',
+      access_log_file => 'graphite-access.log',      
   } ->
 
   file { [ "/opt/graphite/storage", "/opt/graphite/storage/whisper" ]:
@@ -80,7 +93,6 @@ class graphite($version = '0.9.10') {
     owner => "www-data",
     mode => "0664",
     subscribe => Exec["init-db"],
-    notify => Service["apache2"],
   } ->
 
   file { "/opt/graphite/storage/log/webapp/":
@@ -93,48 +105,38 @@ class graphite($version = '0.9.10') {
   file { "/opt/graphite/webapp/graphite/local_settings.py" :
     source => "puppet:///modules/graphite/local_settings.py",
     ensure => present,
- } ->
+  }
 
-  file { "/etc/apache2/sites-available/default" :
-    content =>' 
-<VirtualHost *:80>
-        ServerName graphite
-        DocumentRoot "/opt/graphite/webapp"
-        ErrorLog /opt/graphite/storage/log/webapp/error.log
-        CustomLog /opt/graphite/storage/log/webapp/access.log common
+  concat::fragment { "graphite-fragment":
+    target  => '25-graphite.example.com.conf',
+    order   => 11,
+    content => '
+          <Location "/">
+                  SetHandler python-program
+                  PythonPath "[\'/opt/graphite/webapp\'] + sys.path"
+                  PythonHandler django.core.handlers.modpython
+                  SetEnv DJANGO_SETTINGS_MODULE graphite.settings
+                  PythonDebug Off
+                  PythonAutoReload Off
+                  Header set Access-Control-Allow-Origin "*"
+          </Location>
 
-        <Location "/">
-                SetHandler python-program
-                PythonPath "[\'/opt/graphite/webapp\'] + sys.path"
-                PythonHandler django.core.handlers.modpython
-                SetEnv DJANGO_SETTINGS_MODULE graphite.settings
-                PythonDebug Off
-                PythonAutoReload Off
-        </Location>
+          <Location "/content/">
+                  SetHandler None
+          </Location>
 
-        <Location "/content/">
-                SetHandler None
-        </Location>
+          <Location "/media/">
+                  SetHandler None
+          </Location>
 
-        <Location "/media/">
-                SetHandler None
-        </Location>
+          # NOTE: In order for the django admin site media to work you
+          # must change @DJANGO_ROOT@ to be the path to your django
+          # installation, which is probably something like:
+          # /usr/lib/python2.6/site-packages/django
+          Alias /media/ "@DJANGO_ROOT@/contrib/admin/media/"
+    ',
+  }
 
-    # NOTE: In order for the django admin site media to work you
-    # must change @DJANGO_ROOT@ to be the path to your django
-    # installation, which is probably something like:
-    # /usr/lib/python2.6/site-packages/django
-        Alias /media/ "@DJANGO_ROOT@/contrib/admin/media/"
-
-</VirtualHost>',
-    notify => Service["apache2"],
-  } ->
-
-  service { "apache2" :
-    ensure => "running",
-    require => [ File["/opt/graphite/storage/log/webapp/"], File["/opt/graphite/storage/graphite.db"] ],
-  } -> 
-
-  anchor { 'graphite::end': }
+ anchor { 'graphite::end': }
 
 }
