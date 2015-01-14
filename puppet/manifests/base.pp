@@ -64,9 +64,15 @@ class { 'grafana':
     datasources  => {
         'graphite' => {
             'type'    => 'graphite',
-            'url'     => 'http://localhost:8080',
+            'url'     => 'http://\'+window.location.hostname+\':8080',
             'default' => 'true'
         }, 
+        'elasticsearch' => {
+            'type'      => 'elasticsearch',
+            'url'       => 'http://\'+window.location.hostname+\':9200',
+            'index'     => 'grafana-dash',
+            'grafanaDB' => 'true',
+        },
     }
 }
 
