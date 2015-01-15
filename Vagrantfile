@@ -13,6 +13,7 @@ Vagrant.configure('2') do |config|
   config.vm.network "forwarded_port", guest: 8125, host: 8125, protocol: 'udp'
 
   config.vm.provider 'virtualbox' do |v|
+    v.name = "Graphite"
     v.customize ["modifyvm", :id, "--memory", 512]
     v.customize ["modifyvm", :id, "--cpus", 2]
   end
