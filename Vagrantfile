@@ -17,6 +17,7 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.box = "hashicorp/precise64"
+  config.vm.box_url = "http://mirror.hdcore.eu/vagrant/boxes/precise64.box"
 
   config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.network "forwarded_port", guest: 8081, host: 8081
