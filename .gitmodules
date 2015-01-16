@@ -7,3 +7,6 @@
 [submodule "puppet/modules/apache"]
 	path = puppet/modules/apache
 	url = https://github.com/puppetlabs/puppetlabs-apache.git
+[submodule "puppet/modules/grafana"]
+	path = puppet/modules/grafana
+url=https://github.com/tilmans/puppet-grafana.git
