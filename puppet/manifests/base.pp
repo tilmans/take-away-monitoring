@@ -93,3 +93,25 @@ apache::vhost { 'grafana.example.com':
         }
     ]
 }
+
+$config_hash = {
+  'ES_USER' => 'elasticsearch',
+  'ES_GROUP' => 'elasticsearch',
+}
+
+class { 'java': }
+
+class { 'elasticsearch': 
+    init_defaults   => $config_hash,
+    config          => {},
+    manage_repo     => true,
+    repo_version    => '1.4'
+} 
+
+elasticsearch::instance { 'take-away-monitoring': } 
+
+elasticsearch::plugin{'lmenezes/elasticsearch-kopf':
+  module_dir => 'kopf',
+  instances  => 'take-away-monitoring'
+}
+

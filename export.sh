@@ -1,2 +1,2 @@
 vagrant halt
-VBoxManage export Graphite -o Graphite.ova
+VBoxManage export "Take Away Monitoring" -o TakeAwayMonitoring.ova
