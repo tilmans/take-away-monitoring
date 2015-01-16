@@ -3,11 +3,12 @@
 #
 $script = <<SCRIPT
 # Install wget
-sudo apt-get install -qy wget;
+sudo sh -c "apt-get install -qy wget ; true"
 
 # Update puppet installation
 wget https://raw.githubusercontent.com/hashicorp/puppet-bootstrap/master/ubuntu.sh
-sh ubuntu.sh
+sudo sh -c "sh ubuntu.sh ; true"
+
 SCRIPT
 
 Vagrant.configure('2') do |config|
