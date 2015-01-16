@@ -1,9 +1,6 @@
 [submodule "puppet/modules/archive"]
 	path = puppet/modules/archive
 	url = https://github.com/camptocamp/puppet-archive.git
-[submodule "puppet/modules/grafana"]
-	path = puppet/modules/grafana
-url=https://github.com/tilmans/puppet-grafana
 [submodule "puppet/modules/concat"]
 	path = puppet/modules/concat
 	url = https://github.com/puppetlabs/puppetlabs-concat.git
