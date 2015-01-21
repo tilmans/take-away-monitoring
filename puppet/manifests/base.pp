@@ -103,7 +103,7 @@ class { 'java': }
 
 class { 'elasticsearch': 
     init_defaults   => $config_hash,
-    config          => {},
+    config          => { 'http.cors.enabled' => true },
     manage_repo     => true,
     repo_version    => '1.4'
 } 
