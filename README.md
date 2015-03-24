@@ -13,8 +13,8 @@ Provision a virtual machine with vagrant and puppet to play around with statsd a
 ## Installation
 
 ```
-git clone https://github.com/Jimdo/vagrant-statsd-graphite-puppet.git
-cd vagrant-statsd-graphite-puppet
+git clone --recursive https://github.com/tilmans/take-away-monitoring.git
+cd take-away-monitoring
 vagrant up
 open http://localhost:8080/
 ```
